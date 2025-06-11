@@ -4,8 +4,12 @@ mat-toolbar {
   justify-content: space-between;
 }
 
+
 .root-container {
+  margin: 1rem;
   padding: 2rem;
+  height: calc(100vh - 6rem);
+  min-height: 280px;
   display: flex;
   flex-direction: column;
   align-items: center;
