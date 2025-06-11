@@ -1,4 +1,14 @@
-<app-table
-  [tableDefinition]="tableDefinition"
-  [data]="candidateList"
-></app-table>
+
+<div class="candidates">
+  <div class="candidates-header">
+    <h1 class="candidates-title">Candidatos</h1>
+  </div>
+  <div class="candidates-table-container">
+    <app-table
+      [tableDefinition]="tableDefinition"
+      [data]="candidateList$ | async"
+      (addAction)="addCandidate()"
+    ></app-table>
+  </div>
+</div>
+

@@ -1,38 +1,60 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatTableModule } from '@angular/material/table';
+import { CandidatesService } from '../../../services/candidates.service';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { Candidate } from '../../../models/candidate/candidate';
-import { TableComponent, TableDefinitionType } from "../../shared/table/table.component";
+import { CandidatesFormDialogComponent } from './dialogs/form/candidates-form.dialog.component';
+import { TableComponent, TableDefinitionType } from '../../shared/table/table.component';
+import { AsyncPipe } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-candidates',
   standalone: true,
-  imports: [TableComponent],
+  imports: [MatTableModule, MatButtonModule, MatIconModule, TableComponent, AsyncPipe],
   templateUrl: './candidates.component.html',
   styleUrl: './candidates.component.scss'
 })
-export class CandidatesComponent implements OnInit {
-  public candidateList: Candidate[] = [];
+export class CandidatesComponent implements OnDestroy {
+  public candidateList$: Observable<Candidate[]> = this.candidatesService.candidates$;
+  private destroy$ = new Subject<void>();
+
   public tableDefinition: TableDefinitionType = {
-    title: 'Candidatos',
+    title: 'Listado de candidatos',
     columns: [
       { key: 'name', label: 'Nombre', type: 'text' },
       { key: 'surname', label: 'Apellido', type: 'text' },
-      { key: 'seniority', label: 'Experticia', type: 'text' },
+      { key: 'seniority', label: 'Nivel', type: 'text' },
       { key: 'years', label: 'Años de experiencia', type: 'number' },
       { key: 'availability', label: 'Disponible', type: 'boolean' }
     ]
   };
 
   constructor(
+    private dialog: MatDialog,
+    private candidatesService: CandidatesService
   ) { }
 
-  ngOnInit(): void {
-    this.candidateList = [
-      Candidate.create('Juan', 'Pérez', 'junior', 1, true),
-      Candidate.create('María', 'García', 'junior', 2, true),
-      Candidate.create('Carlos', 'López', 'junior', 3, true),
-      Candidate.create('Ana', 'Martínez', 'junior', 4, true),
-      Candidate.create('Pedro', 'Sánchez', 'junior', 5, true),
-      Candidate.create('Paco', 'Pérez', 'senior', 6, false)
-    ];
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  addCandidate(): void {
+    const dialogRef = this.dialog.open(CandidatesFormDialogComponent, {
+      width: '400px',
+    });
+
+    dialogRef.afterClosed()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(result => {
+      if (result) {
+        this.candidatesService.createCandidate(result)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe();
+      }
+    });
   }
 }
