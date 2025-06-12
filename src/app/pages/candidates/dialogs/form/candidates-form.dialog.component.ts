@@ -11,10 +11,12 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { fileSizeValidator } from '../../../../shared/form-validators/fileSize.validator';
 import { fileTypeValidator } from '../../../../shared/form-validators/fileType.validator';
+import { FormValidatorMessagerService } from '../../../../shared/form-validators/service/formValidatorMessager.service';
 
 @Component({
   standalone: true,
   imports: [MatCardModule, MatIconModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatGridListModule, FormsModule, ReactiveFormsModule, CommonModule],
+  providers: [FormValidatorMessagerService],
   templateUrl: './candidates-form.dialog.component.html',
   styleUrl: './candidates-form.dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -28,7 +30,6 @@ export class CandidatesFormDialogComponent {
 
   excelFileStored: File | null = null;
 
-  // FormGroup para el formulario completo
   candidateForm = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
     surName: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
@@ -43,20 +44,25 @@ export class CandidatesFormDialogComponent {
   get formSurName() { return this.candidateForm.get('surName') as FormControl; }
   get formExcelFile() { return this.candidateForm.get('excelFile') as FormControl; }
 
-  constructor(private dialogRef: MatDialogRef<CandidatesFormDialogComponent>) {
+  constructor(private dialogRef: MatDialogRef<CandidatesFormDialogComponent>, private messagerService: FormValidatorMessagerService) {
     this.formName.statusChanges
       .pipe(takeUntilDestroyed())
-      .subscribe(() => this.updateNameErrorMessage());
+      .subscribe(() =>
+        this.nameErrorMessage = this.messagerService.getErrorMessage(this.formName!, 'El nombre')
+      );
 
     this.formSurName?.statusChanges
       .pipe(takeUntilDestroyed())
-      .subscribe(() => this.updateSurNameErrorMessage());
+      .subscribe(() =>
+        this.surNameErrorMessage = this.messagerService.getErrorMessage(this.formSurName!, 'El apellido')
+      );
 
     this.formExcelFile?.statusChanges
       .pipe(takeUntilDestroyed())
-      .subscribe(() => this.updateExcelFileErrorMessage());
+      .subscribe(() =>
+        this.excelFileErrorMessage = this.messagerService.getErrorMessage(this.formExcelFile!, 'El fichero Excel')
+      );
   }
-
 
   handleFileInputChange(file: FileList | null): void {
     if (file?.length) {
@@ -76,7 +82,7 @@ export class CandidatesFormDialogComponent {
       const formData = {
         name: this.formName.value,
         surName: this.formSurName.value,
-        file: this.excelFileStored
+        excelFile: this.excelFileStored
       };
       this.dialogRef.close(formData);
     } else {
@@ -86,43 +92,5 @@ export class CandidatesFormDialogComponent {
 
   onCancel(): void {
     this.dialogRef.close();
-  }
-
-  private updateNameErrorMessage() {
-    if (this.formName.hasError('required')) {
-      this.nameErrorMessage = 'El nombre es obligatorio';
-    } else if (this.formName.hasError('minlength')) {
-      this.nameErrorMessage = 'El nombre debe tener al menos 2 caracteres';
-    } else if (this.formName.hasError('maxlength')) {
-      this.nameErrorMessage = 'El nombre no puede tener más de 100 caracteres';
-    } else {
-      this.nameErrorMessage = '';
-    }
-  }
-
-  private updateSurNameErrorMessage() {
-    if (this.formSurName.hasError('required')) {
-      this.surNameErrorMessage = 'El apellido es obligatorio';
-    } else if (this.formSurName.hasError('minlength')) {
-      this.surNameErrorMessage = 'El apellido debe tener al menos 2 caracteres';
-    } else if (this.formSurName.hasError('maxlength')) {
-      this.surNameErrorMessage = 'El apellido no puede tener más de 100 caracteres';
-    } else {
-      this.surNameErrorMessage = '';
-    }
-  }
-
-  private updateExcelFileErrorMessage() {
-    if (this.formExcelFile.hasError('required')) {
-      this.excelFileErrorMessage = 'El archivo Excel es obligatorio';
-    } else if (this.formExcelFile.hasError('fileTooLarge')) {
-      this.excelFileErrorMessage = `El archivo no puede ser mayor a ${this.MAX_FILE_SIZE / (1024 * 1024)} MB`;
-    } else if (this.formExcelFile.hasError('invalidFileType')) {
-      this.excelFileErrorMessage = 'El archivo debe ser un Excel (.xls, .xlsx)';
-    } else if (this.formExcelFile.hasError('invalidFileObject')) {
-      this.excelFileErrorMessage = 'El archivo seleccionado no es válido';
-    } else {
-      this.excelFileErrorMessage = '';
-    }
   }
 }

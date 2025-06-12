@@ -7,7 +7,7 @@ export function fileSizeValidator(max_file_size: number, selectedFile: File | nu
     }
 
     if (selectedFile.size > max_file_size) {
-      return { 'fileTooLarge': true };
+      return { fileTooLarge: { actualSize: selectedFile.size, maxSize: max_file_size } };
     }
 
     return null;
