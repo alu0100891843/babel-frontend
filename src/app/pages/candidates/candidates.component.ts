@@ -5,7 +5,7 @@ import { CandidatesService } from '../../../services/candidates.service';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { Candidate } from '../../../models/candidate/candidate';
 import { CandidatesFormDialogComponent } from './dialogs/form/candidates-form.dialog.component';
-import { TableComponent, TableDefinitionType } from '../../shared/table/table.component';
+import { TableComponent, TableDefinitionType } from '../../shared/components/table/table.component';
 import { AsyncPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -44,7 +44,8 @@ export class CandidatesComponent implements OnDestroy {
 
   addCandidate(): void {
     const dialogRef = this.dialog.open(CandidatesFormDialogComponent, {
-      width: '400px',
+      width: '500px',
+      disableClose: true
     });
 
     dialogRef.afterClosed()

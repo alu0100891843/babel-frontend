@@ -1,1 +1,40 @@
-<p>candidates form dialog works!</p>
+<div class="form-dialog-container">
+  <form [formGroup]="candidateForm" (ngSubmit)="onSubmit()" novalidate>
+    <mat-grid-list cols="2" rowHeight="200px">
+      <mat-grid-tile>
+        <div>
+          <mat-form-field>
+            <mat-label>Nombre del candidato</mat-label>
+            <input matInput placeholder="Cristian" formControlName="name" required>
+            <mat-error>{{nameErrorMessage}}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Apellido del candidato</mat-label>
+            <input matInput placeholder="Díaz" formControlName="surName" required>
+            <mat-error>{{surNameErrorMessage}}</mat-error>
+          </mat-form-field>
+        </div>
+      </mat-grid-tile>
+      <mat-grid-tile>
+        <mat-form-field appearance="outline">
+          <mat-label>Archivo Excel</mat-label>
+          <button mat-icon-button matPrefix type="button" (click)="f_input.click()">
+            <mat-icon>attach_file</mat-icon>
+          </button>
+          <input type="text" readonly matInput formControlName="excelFile" required />
+          <input type="file" accept=".xlsx,.xls" hidden #f_input (change)="handleFileInputChange(f_input.files)" />
+          <mat-error>{{excelFileErrorMessage}}</mat-error>
+        </mat-form-field>
+      </mat-grid-tile>
+    </mat-grid-list>
+
+    <div class="form-actions">
+      <button mat-raised-button color="primary" type="submit" [disabled]="candidateForm.invalid">
+        Guardar
+      </button>
+      <button mat-raised-button color="warn" type="button" (click)="onCancel()">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</div>
