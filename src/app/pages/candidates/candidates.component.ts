@@ -62,7 +62,7 @@ export class CandidatesComponent implements OnDestroy {
                 this.snackBar.showSuccess('Candidato creado exitosamente');
               },
               error: (errResponse) => {
-                this.snackBar.showError('Error al crear el candidato: ' + errResponse.error.message);
+                this.snackBar.showError('Error al crear el candidato: ' + errResponse?.error?.message || 'Error desconocido');
               }
             });
         }
