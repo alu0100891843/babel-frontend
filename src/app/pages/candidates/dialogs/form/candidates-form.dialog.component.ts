@@ -25,14 +25,14 @@ export class CandidatesFormDialogComponent {
   private readonly MAX_FILE_SIZE = 1 * 1024 * 1024;
 
   nameErrorMessage = '';
-  surNameErrorMessage = '';
+  surnameErrorMessage = '';
   excelFileErrorMessage = '';
 
   excelFileStored: File | null = null;
 
   candidateForm = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
-    surName: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
+    surname: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
     excelFile: new FormControl('', [
       Validators.required,
       fileSizeValidator(this.MAX_FILE_SIZE, this.excelFileStored),
@@ -41,7 +41,7 @@ export class CandidatesFormDialogComponent {
   });
 
   get formName() { return this.candidateForm.get('name') as FormControl; }
-  get formSurName() { return this.candidateForm.get('surName') as FormControl; }
+  get formSurname() { return this.candidateForm.get('surname') as FormControl; }
   get formExcelFile() { return this.candidateForm.get('excelFile') as FormControl; }
 
   constructor(private dialogRef: MatDialogRef<CandidatesFormDialogComponent>, private messagerService: FormValidatorMessagerService) {
@@ -51,10 +51,10 @@ export class CandidatesFormDialogComponent {
         this.nameErrorMessage = this.messagerService.getErrorMessage(this.formName!, 'El nombre')
       );
 
-    this.formSurName?.statusChanges
+    this.formSurname?.statusChanges
       .pipe(takeUntilDestroyed())
       .subscribe(() =>
-        this.surNameErrorMessage = this.messagerService.getErrorMessage(this.formSurName!, 'El apellido')
+        this.surnameErrorMessage = this.messagerService.getErrorMessage(this.formSurname!, 'El apellido')
       );
 
     this.formExcelFile?.statusChanges
@@ -81,7 +81,7 @@ export class CandidatesFormDialogComponent {
     if (this.candidateForm.valid) {
       const formData = {
         name: this.formName.value,
-        surName: this.formSurName.value,
+        surname: this.formSurname.value,
         excelFile: this.excelFileStored
       };
       this.dialogRef.close(formData);

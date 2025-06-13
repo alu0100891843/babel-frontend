@@ -1,4 +1,41 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.success-snackbar {
+  >* {
+    background-color: #4caf50 !important;
+    color: white !important;
+  }
+
+  .mat-mdc-snack-bar-action {
+    color: white !important;
+  }
+
+  .mdc-snackbar__label {
+    font-weight: 500 !important;
+  }
+}
+
+.error-snackbar {
+  >* {
+    background-color: #821e17 !important;
+    color: white !important;
+  }
+
+  .mat-mdc-snack-bar-action {
+    color: white !important;
+  }
+
+  .mdc-snackbar__label {
+    font-weight: 500 !important;
+  }
+}

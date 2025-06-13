@@ -2,20 +2,20 @@ export class Candidate {
   name: string;
   surname: string;
   seniority: string;
-  years: number;
+  experience: number;
   availability: boolean;
 
   private constructor(
     name: string,
     surname: string,
     seniority: string,
-    years: number,
+    experience: number,
     availability: boolean
   ) {
     this.name = name;
     this.surname = surname;
     this.seniority = seniority;
-    this.years = years;
+    this.experience = experience;
     this.availability = availability;
   }
 
@@ -23,10 +23,10 @@ export class Candidate {
     name: string,
     surname: string,
     seniority: string,
-    years: number,
+    experience: number,
     availability: boolean
   ): Candidate {
-    return new Candidate(name, surname, seniority, years, availability);
+    return new Candidate(name, surname, seniority, experience, availability);
   }
 
   static createFromJson(json: any): Candidate {
@@ -34,7 +34,7 @@ export class Candidate {
       json.name,
       json.surname,
       json.seniority,
-      json.years,
+      json.experience,
       json.availability
     );
   }

@@ -9,11 +9,13 @@ import { TableComponent, TableDefinitionType } from '../../shared/components/tab
 import { AsyncPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { SnackNofifyService } from '../../shared/form-validators/service/snackNotify.service';
 @Component({
   selector: 'app-candidates',
   standalone: true,
   imports: [MatTableModule, MatButtonModule, MatIconModule, TableComponent, AsyncPipe],
+  providers: [SnackNofifyService],
   templateUrl: './candidates.component.html',
   styleUrl: './candidates.component.scss'
 })
@@ -27,14 +29,15 @@ export class CandidatesComponent implements OnDestroy {
       { key: 'name', label: 'Nombre', type: 'text' },
       { key: 'surname', label: 'Apellido', type: 'text' },
       { key: 'seniority', label: 'Nivel', type: 'text' },
-      { key: 'years', label: 'Años de experiencia', type: 'number' },
+      { key: 'experience', label: 'Años de experiencia', type: 'number' },
       { key: 'availability', label: 'Disponible', type: 'boolean' }
     ]
   };
 
   constructor(
     private dialog: MatDialog,
-    private candidatesService: CandidatesService
+    private candidatesService: CandidatesService,
+    private snackBar: SnackNofifyService
   ) { }
 
   ngOnDestroy(): void {
@@ -49,13 +52,20 @@ export class CandidatesComponent implements OnDestroy {
     });
 
     dialogRef.afterClosed()
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(result => {
-      if (result) {
-        this.candidatesService.createCandidate(result)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe();
-      }
-    });
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result) {
+          this.candidatesService.createCandidate(result)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: () => {
+                this.snackBar.showSuccess('Candidato creado exitosamente');
+              },
+              error: (errResponse) => {
+                this.snackBar.showError('Error al crear el candidato: ' + errResponse.error.message);
+              }
+            });
+        }
+      });
   }
 }

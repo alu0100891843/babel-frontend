@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, EventEmitter, Input, input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -22,8 +22,9 @@ export interface TableDefinitionType {
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss'],
   imports: [MatTableModule, MatButtonModule, MatToolbarModule, MatMenuModule, MatPaginatorModule, MatIconModule, CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TableComponent<T> implements AfterViewInit {
+export class TableComponent<T> implements OnInit, AfterViewInit, OnChanges {
   @ViewChild(MatPaginator)
   paginator!: MatPaginator;
 
@@ -34,16 +35,27 @@ export class TableComponent<T> implements AfterViewInit {
   @Output()
   public addAction = new EventEmitter<void>();
 
-  public dataSource!: MatTableDataSource<T>;
+  public dataSource = new MatTableDataSource<T>([]);
   public displayedColumns!: string[];
 
   ngOnInit() {
     this.displayedColumns = this.tableDefinition.columns.map(x => x.key);
+    this.updateDataSource();
   }
 
   ngAfterViewInit() {
-    this.dataSource = new MatTableDataSource<T>(this.data as T[] || []);
     this.dataSource.paginator = this.paginator;
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    const { data } = changes;
+    if (data && data.currentValue !== data.previousValue) {
+      this.updateDataSource();
+    }
+  }
+
+  private updateDataSource() {
+    this.dataSource.data = this.data as T[] || [];
   }
 
   onAddButtonClick(): void {

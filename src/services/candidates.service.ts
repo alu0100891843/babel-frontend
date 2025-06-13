@@ -1,15 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { RqCreateCandidate } from '../models/candidate/rq-create-candidate';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { Candidate } from '../models/candidate/candidate';
 import { environment } from '../environments/environment';
 import { constants } from '../constants/constants';
+import { ApiService } from './parent/api.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CandidatesService {
+export class CandidatesService extends ApiService {
 
   private readonly STORAGE_KEY = constants.SERVICES.CANDIDATES.storageKey
   private readonly API_URL = `${environment.API_URL}${constants.SERVICES.CANDIDATES.path}`;
@@ -17,7 +18,8 @@ export class CandidatesService {
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   public candidates$ = this.candidatesSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor() {
+    super();
     this.candidatesSubject.next(this.loadCandidatesFromStorage());
   }
 
@@ -47,18 +49,19 @@ export class CandidatesService {
 
   public createCandidate(candidate: RqCreateCandidate): Observable<Candidate> {
     const url = `${this.API_URL}${constants.SERVICES.CANDIDATES.createCandidate.url}`;
+    const formData = new FormData();
+    Object.entries(candidate).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
 
-    return this.http.post<Candidate>(url, candidate, {
-      headers: { 'Content-Type': 'application/json' }
-    }).pipe(
+    return this.http.post<Candidate>(url, formData).pipe(
       tap(result => {
         const newCandidate = Candidate.createFromJson(result);
         this.storeCandidate(newCandidate);
+      }),
+      catchError(error => {
+        return throwError(() => error);
       })
     );
-  }
-
-  public getCandidates(): Candidate[] {
-    return this.candidatesSubject.value;
   }
 }
