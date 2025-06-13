@@ -6,6 +6,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export interface TableDefinitionType {
   title: string;
@@ -21,7 +22,7 @@ export interface TableDefinitionType {
   standalone: true,
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss'],
-  imports: [MatTableModule, MatButtonModule, MatToolbarModule, MatMenuModule, MatPaginatorModule, MatIconModule, CommonModule],
+  imports: [MatTableModule, MatButtonModule, MatToolbarModule, MatMenuModule, MatPaginatorModule, MatIconModule, MatProgressSpinnerModule, CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TableComponent<T> implements OnInit, AfterViewInit, OnChanges {
@@ -38,9 +39,13 @@ export class TableComponent<T> implements OnInit, AfterViewInit, OnChanges {
   public dataSource = new MatTableDataSource<T>([]);
   public displayedColumns!: string[];
 
+  public componentInitialized = false;
+
   ngOnInit() {
+
     this.displayedColumns = this.tableDefinition.columns.map(x => x.key);
     this.updateDataSource();
+    this.componentInitialized = true;
   }
 
   ngAfterViewInit() {

@@ -47,7 +47,7 @@ export class CandidatesComponent implements OnDestroy {
 
   addCandidate(): void {
     const dialogRef = this.dialog.open(CandidatesFormDialogComponent, {
-      width: '500px',
+      width: '700px',
       disableClose: true
     });
 

@@ -1,13 +1,14 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
 
-export function fileSizeValidator(max_file_size: number, selectedFile: File | null): ValidatorFn {
+export function fileSizeValidator(max_file_size: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
-    if (!selectedFile) {
+    const file = control.value as File | null;
+    if (!file) {
       return null;
     }
 
-    if (selectedFile.size > max_file_size) {
-      return { fileTooLarge: { actualSize: selectedFile.size, maxSize: max_file_size } };
+    if (file.size > max_file_size) {
+      return { fileTooLarge: { actualSize: file.size, maxSize: max_file_size } };
     }
 
     return null;

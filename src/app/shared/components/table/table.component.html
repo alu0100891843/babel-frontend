@@ -7,28 +7,41 @@
     </button>
   </mat-toolbar>
 
-  <div class="mat-elevation-z8">
-    <table mat-table [dataSource]="dataSource">
-      <ng-container *ngFor="let column of tableDefinition.columns">
-        <ng-container [matColumnDef]=column.key>
-          <th mat-header-cell *matHeaderCellDef> {{column.label}} </th>
-          <td mat-cell *matCellDef="let element">
-            <ng-container [ngSwitch]="column.type">
-              <span *ngSwitchCase="'text'">{{element[column.key]}}</span>
-              <span *ngSwitchCase="'number'">{{element[column.key] | number}}</span>
-              <span *ngSwitchCase="'date'">{{element[column.key] | date:'shortDate'}}</span>
-              <span *ngSwitchCase="'boolean'">{{element[column.key] ? 'Sí' : 'No'}}</span>
-              <span *ngSwitchDefault>{{element[column.key]}}</span>
-            </ng-container>
-          </td>
+  <ng-container *ngIf="!componentInitialized && dataSource.data.length === 0">
+    <mat-spinner></mat-spinner>
+  </ng-container>
+
+  <ng-container *ngIf="componentInitialized && dataSource.data.length === 0">
+    <div class="no-data-message">
+      <p>No hay datos disponibles.</p>
+      <button mat-raised-button color="primary" (click)="onAddButtonClick()">Agregar</button>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="componentInitialized && dataSource.data.length > 0">
+    <div class="mat-elevation-z8">
+      <table mat-table [dataSource]="dataSource">
+        <ng-container *ngFor="let column of tableDefinition.columns">
+          <ng-container [matColumnDef]=column.key>
+            <th mat-header-cell *matHeaderCellDef> {{column.label}} </th>
+            <td mat-cell *matCellDef="let element">
+              <ng-container [ngSwitch]="column.type">
+                <span *ngSwitchCase="'text'">{{element[column.key]}}</span>
+                <span *ngSwitchCase="'number'">{{element[column.key] | number}}</span>
+                <span *ngSwitchCase="'date'">{{element[column.key] | date:'shortDate'}}</span>
+                <span *ngSwitchCase="'boolean'">{{element[column.key] ? 'Sí' : 'No'}}</span>
+                <span *ngSwitchDefault>{{element[column.key]}}</span>
+              </ng-container>
+            </td>
+          </ng-container>
         </ng-container>
-      </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
 
-    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
-    </mat-paginator>
-  </div>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+      </mat-paginator>
+    </div>
+  </ng-container>
 </div>

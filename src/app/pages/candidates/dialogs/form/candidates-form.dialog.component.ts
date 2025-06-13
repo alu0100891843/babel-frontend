@@ -28,15 +28,13 @@ export class CandidatesFormDialogComponent {
   surnameErrorMessage = '';
   excelFileErrorMessage = '';
 
-  excelFileStored: File | null = null;
-
   candidateForm = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
     surname: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]),
     excelFile: new FormControl('', [
       Validators.required,
-      fileSizeValidator(this.MAX_FILE_SIZE, this.excelFileStored),
-      fileTypeValidator(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'], ['.xls', '.xlsx'], this.excelFileStored)
+      fileSizeValidator(this.MAX_FILE_SIZE),
+      fileTypeValidator(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'], ['.xls', '.xlsx'])
     ])
   });
 
@@ -65,14 +63,14 @@ export class CandidatesFormDialogComponent {
   }
 
   handleFileInputChange(file: FileList | null): void {
+    this.formExcelFile.markAsTouched();
     if (file?.length) {
       const f = file[0];
-      this.excelFileStored = f;
-      this.formExcelFile.patchValue(f.name);
+      this.formExcelFile.patchValue(f);
       this.formExcelFile.updateValueAndValidity();
     } else {
-      this.excelFileStored = null;
-      this.formExcelFile.patchValue("");
+      this.formExcelFile.patchValue(null);
+      this.formExcelFile.setErrors({ required: true });
       this.formExcelFile.updateValueAndValidity();
     }
   }
@@ -82,7 +80,7 @@ export class CandidatesFormDialogComponent {
       const formData = {
         name: this.formName.value,
         surname: this.formSurname.value,
-        excelFile: this.excelFileStored
+        excelFile: this.formExcelFile.value instanceof File ? this.formExcelFile.value : null
       };
       this.dialogRef.close(formData);
     } else {
